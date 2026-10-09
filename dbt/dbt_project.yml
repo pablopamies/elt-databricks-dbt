@@ -1,0 +1,46 @@
+# dbt_project.yml - Arquitectura Medallion con Bronze tipado
+# Proyecto ELT: CoinGecko → Databricks
+
+name: 'crypto_elt'
+version: '1.0.0'
+config-version: 2
+
+profile: 'databricks'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  crypto_elt:
+
+    # BRONZE: Tipado de datos crudos
+    bronze:
+      +materialized: view
+      +schema: crypto_data
+      +tags: ["bronze", "raw"]
+      +description: "BRONZE: Datos RAW con tipado y validación básica"
+
+    # SILVER: Datos limpios
+    silver:
+      +materialized: view
+      +schema: crypto_data
+      +tags: ["silver", "staging", "cleaned"]
+      +description: "SILVER: Datos limpios, deduplicados y enriquecidos"
+
+    # GOLD: Datos para negocio
+    gold:
+      +materialized: table
+      +schema: crypto_data
+      +tags: ["gold", "marts"]
+      +description: "GOLD: Métricas agregadas para análisis y BI"
+
+vars:
+  environment: '{{ env_var("DBT_ENV", "dev") }}'
+  run_date: '{{ run_started_at }}'
+  coingecko_top_n: 50

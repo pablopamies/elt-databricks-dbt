@@ -1,0 +1,48 @@
+version: 2
+
+sources:
+  - name: coingecko_api
+    description: "API CoinGecko - Datos de criptomonedas en tiempo real"
+    database: hive_metastore
+    schema: crypto_data
+
+    tables:
+      - name: raw_crypto_prices
+        description: "Tabla RAW - Ingesta directa de CoinGecko API (BRONZE)"
+        columns:
+          - name: coin_id
+            description: "ID único de la criptomoneda"
+            tests:
+              - not_null
+              - unique
+
+          - name: symbol
+            description: "Símbolo de la criptomoneda (BTC, ETH, etc)"
+            tests:
+              - not_null
+
+          - name: name
+            description: "Nombre completo de la criptomoneda"
+            tests:
+              - not_null
+
+          - name: current_price
+            description: "Precio actual en USD"
+            tests:
+              - not_null
+
+          - name: market_cap
+            description: "Capitalización de mercado total en USD"
+
+          - name: market_cap_rank
+            description: "Ranking global por capitalización de mercado"
+            tests:
+              - not_null
+
+          - name: price_change_percentage_24h
+            description: "Cambio de precio en las últimas 24 horas (%)"
+
+          - name: ingested_at
+            description: "Timestamp de cuándo se ingesta el dato"
+            tests:
+              - not_null
